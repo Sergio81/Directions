@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
+import com.androidbox.directions.repository.DirectionsRepository
 import com.firebase.ui.auth.AuthUI
 import java.util.*
 import com.google.firebase.auth.FirebaseAuth
@@ -49,9 +50,13 @@ class MainActivity : AppCompatActivity() {
     // After the Sign in we can get data here
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         showUserEmail()
+
     }
 
     private fun showUserEmail() {
+        val repository = DirectionsRepository()
+
+        repository.updateSchedule(auth.currentUser!!.email!!)
         textView.text = auth.currentUser!!.email
     }
 
