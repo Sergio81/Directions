@@ -1,11 +1,11 @@
-package com.androidbox.directions
+package com.androidbox.directions.view
 
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
-import com.androidbox.directions.repository.DirectionsRepository
+import com.androidbox.directions.R
 import com.firebase.ui.auth.AuthUI
 import java.util.*
 import com.google.firebase.auth.FirebaseAuth
@@ -54,9 +54,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun showUserEmail() {
-        val repository = DirectionsRepository()
-
-        repository.updateSchedule(auth.currentUser!!.email!!)
         textView.text = auth.currentUser!!.email
     }
 

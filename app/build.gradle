@@ -12,11 +12,6 @@ android {
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-        javaCompileOptions {
-            annotationProcessorOptions {
-                arguments = ["room.schemaLocation": "$projectDir/schemas".toString()]
-            }
-        }
     }
     buildTypes {
         release {
@@ -45,6 +40,11 @@ dependencies {
     api 'com.android.support:design:28.0.0'
     implementation 'com.android.support:support-v4:28.0.0'
 
+    // Dagger
+    implementation 'com.google.dagger:dagger:2.18'
+    implementation 'com.google.dagger:dagger-android-support:2.18'
+    kapt 'com.google.dagger:dagger-compiler:2.18'
+
     // Firebase
     implementation 'com.google.firebase:firebase-core:16.0.7'
     implementation 'com.firebaseui:firebase-ui-auth:4.3.1'
@@ -52,9 +52,14 @@ dependencies {
     // Firestore
     implementation 'com.google.firebase:firebase-firestore:18.1.0'
 
+    // Retrofit
+    implementation 'com.squareup.retrofit2:retrofit:2.5.0'
+
     // Room
     implementation 'android.arch.persistence.room:runtime:1.1.1'
     kapt 'android.arch.persistence.room:compiler:1.1.1'
+
+    // Google Maps
     implementation 'com.google.android.gms:play-services-maps:16.1.0'
 }
 
