@@ -17,7 +17,6 @@ class MapViewModel @Inject constructor(var repository: DirectionsRepository) : V
                 var schedule = MutableLiveData<ArrayList<GeoPoint>>()
 
                 schedule.value = s
-                repository.getDirections()
                 schedule
 
             }
@@ -28,5 +27,9 @@ class MapViewModel @Inject constructor(var repository: DirectionsRepository) : V
 
     init {
             user.value = UserApp()
+    }
+
+    fun getDirections() {
+        repository.getDirections()
     }
 }

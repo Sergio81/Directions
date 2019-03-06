@@ -23,6 +23,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.GeoPoint
 import kotlinx.android.synthetic.main.fragment_map.*
 import com.google.android.gms.maps.model.LatLngBounds
+import java.util.*
 import javax.inject.Inject
 
 class MapFragment : Fragment(), OnMapReadyCallback {
@@ -50,6 +51,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         isMapReady = true
         viewModel.userSchedule.observe(this, Observer{ points ->
             showPoints(points)
+            viewModel.getDirections()
         })
         //showCity()
         //val repository = DirectionsRepository()
@@ -71,7 +73,6 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         val cu = CameraUpdateFactory.newLatLngBounds(bounds, padding)
 
         mMap!!.moveCamera(cu)
-
         mMap!!.animateCamera(cu)
     }
 
