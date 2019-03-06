@@ -1,14 +1,17 @@
 package com.androidbox.directions.view.map
 
-
+import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProviders
 import com.androidbox.directions.R
+import com.androidbox.directions.app.DirectionsApp
 import com.androidbox.directions.repository.DirectionsRepository
+import com.androidbox.directions.view.ViewModelFactory
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
@@ -20,14 +23,19 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.GeoPoint
 import kotlinx.android.synthetic.main.fragment_map.*
 import com.google.android.gms.maps.model.LatLngBounds
+import javax.inject.Inject
 
 class MapFragment : Fragment(), OnMapReadyCallback {
     private val auth = FirebaseAuth.getInstance()
     private var markerCity: Marker? = null
     private var mMap: GoogleMap? = null
     private var isMapReady = false
+    @Inject lateinit var viewModelFactory: ViewModelFactory
+    private lateinit var viewModel: MapViewModel
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        (activity!!.application as DirectionsApp).appComponent.inject(this)
+        viewModel = ViewModelProviders.of(this, viewModelFactory).get(MapViewModel::class.java)
         return inflater.inflate(R.layout.fragment_map, container, false)
     }
 
@@ -40,13 +48,11 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     override fun onMapReady(googleMap: GoogleMap) {
         mMap = googleMap
         isMapReady = true
-        //showCity()
-        val repository = DirectionsRepository()
-
-        repository.updateSchedule(auth.currentUser!!.email!!)
-        repository.userSchedule.observe(this, Observer{ myList ->
-            showPoints(myList)
+        viewModel.userSchedule.observe(this, Observer{ points ->
+            showPoints(points)
         })
+        //showCity()
+        //val repository = DirectionsRepository()
     }
 
     private fun showPoints(points:ArrayList<GeoPoint>){
@@ -67,14 +73,6 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         mMap!!.moveCamera(cu)
 
         mMap!!.animateCamera(cu)
-//        val cameraPosition = CameraPosition.Builder()
-//            .target(cityLatLng)      // Sets the center of the map to the selected city
-//            .zoom(10f)                   // Sets the zoom to view City Level
-//            .bearing(20f)                // Sets the orientation of the camera to east
-//            .tilt(30f)                   // Sets the tilt of the camera to 30 degrees
-//            .build()                   // Creates a CameraPosition from the builder
-//
-//        mMap!!.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition))
     }
 
     private fun showCity() {

@@ -5,27 +5,35 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
+import androidx.lifecycle.ViewModelProviders
 import com.androidbox.directions.R
+import com.androidbox.directions.app.DirectionsApp
+import com.androidbox.directions.view.map.MapViewModel
 import com.firebase.ui.auth.AuthUI
 import java.util.*
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.android.synthetic.main.activity_main.*
+import javax.inject.Inject
 
 class MainActivity : AppCompatActivity() {
-    // Choose an arbitrary request code value
     private val auth = FirebaseAuth.getInstance()
-    private val authUI  = AuthUI.getInstance()
+    private val authUI = AuthUI.getInstance()
     private val RC_SIGN_IN = 123
+    @Inject lateinit var viewModelFactory: ViewModelFactory
+    private lateinit var viewModel: MapViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        (application as DirectionsApp).appComponent.inject(this)
+        viewModel = ViewModelProviders.of(this, viewModelFactory).get(MapViewModel::class.java)
+
         setSupportActionBar(my_toolbar)
 
         if (auth.currentUser != null) {
             // already signed in
-            showUserEmail()
+            updateUser(true)
         } else {
             // not signed in
             signIn()
@@ -38,23 +46,31 @@ class MainActivity : AppCompatActivity() {
             AuthUI.IdpConfig.EmailBuilder().build()
         )
 
+        updateUser(false)
+
         // Create and launch sign-in intent
         startActivityForResult(
             authUI
                 .createSignInIntentBuilder()
                 .setAvailableProviders(providers)
                 .build()
-            , RC_SIGN_IN)
+            , RC_SIGN_IN
+        )
     }
 
     // After the Sign in we can get data here
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        showUserEmail()
-
+        //showUserEmail()
+        updateUser(true)
     }
 
-    private fun showUserEmail() {
-        textView.text = auth.currentUser!!.email
+    private fun updateUser(active: Boolean) {
+        if (active)
+            viewModel.user.value!!.email = auth.currentUser!!.email!!
+        else
+            viewModel.user.value!!.email = ""
+
+        viewModel.user.value!!.signedIn = active
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -63,9 +79,9 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
-        when(item?.itemId){
+        when (item?.itemId) {
             R.id.action_signout -> {
-                authUI.signOut(this).addOnCompleteListener{
+                authUI.signOut(this).addOnCompleteListener {
                     signIn()
                 }
             }

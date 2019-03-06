@@ -6,7 +6,7 @@ import retrofit2.http.GET
 import retrofit2.http.Query
 
 interface GoogleDirectionsAPI {
-    @GET("/json?")
+    @GET("json?")
     fun getDirections(
         @Query("origin")origin:String,
         @Query("destination")destination:String,

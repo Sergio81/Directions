@@ -1,4 +1,3 @@
 package com.androidbox.directions.model.authentication
 
-class UserApp {
-}
+data class UserApp (var email:String = "", var signedIn:Boolean = false)
